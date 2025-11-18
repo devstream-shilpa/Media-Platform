@@ -2,18 +2,17 @@
 
 A highly available, auto-scaling media sharing platform deployed on AWS with comprehensive monitoring and disaster recovery capabilities.
 
-![Architecture](docs/architecture-diagram.png)
 
-## 🎯 Project Overview
+##  Project Overview
 
 This project demonstrates enterprise-grade cloud architecture by deploying a scalable media platform that meets the following requirements:
 
-- ✅ **Elasticity**: Auto-scales 2-6 instances based on CPU utilization
-- ✅ **Auto Recovery**: Multi-layered health checks with automatic failover
-- ✅ **Failure Isolation**: Eliminates 5 single points of failure through redundancy
-- ✅ **Performance**: Sub-second response times with CDN and caching
+- **Elasticity**: Auto-scales 2-6 instances based on CPU utilization
+- **Auto Recovery**: Multi-layered health checks with automatic failover
+- **Failure Isolation**: Eliminates 5 single points of failure through redundancy
+- **Performance**: Sub-second response times with CDN and caching
 
-## 📋 Features
+## Features
 
 - **User Authentication**: JWT-based authentication with bcrypt password hashing
 - **Media Upload**: Direct S3 uploads with presigned URLs
@@ -24,7 +23,7 @@ This project demonstrates enterprise-grade cloud architecture by deploying a sca
 - **Caching**: Redis-based caching for 80%+ cache hit rate
 - **Monitoring**: Comprehensive CloudWatch metrics and alarms
 
-## 🏗️ Architecture
+## Architecture
 
 ### Infrastructure Components
 
@@ -47,9 +46,9 @@ This project demonstrates enterprise-grade cloud architecture by deploying a sca
 └── Private Subnets (EC2, RDS, Lambda, Redis)
 ```
 
-## 📦 Prerequisites
+##  Prerequisites
 
-Before deploying, ensure you have:
+Before deploying, ensure the below:
 
 - **AWS Account** with administrative access
 - **Terraform** v1.5+ ([Download](https://developer.hashicorp.com/terraform/install))
@@ -72,7 +71,7 @@ psql --version      # PostgreSQL client
 
 ## 🚀 Quick Start Deployment
 
-### Option 1: Automated Deployment (Recommended)
+### Automated Deployment 
 
 ```bash
 # 1. Clone repository
@@ -99,9 +98,7 @@ cp terraform/terraform.tfvars.example terraform/terraform.tfvars
 
 **Deployment Time**: ~20-25 minutes
 
-### Option 2: Manual Step-by-Step Deployment
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed manual deployment instructions.
 
 ## 📝 Configuration
 
@@ -431,7 +428,7 @@ aws autoscaling describe-scaling-activities \
 
 ## 🧹 Cleanup
 
-**⚠️ WARNING**: This will destroy ALL resources and data!
+**WARNING**: This will destroy ALL resources and data!
 
 ```bash
 # 1. Disable RDS deletion protection
