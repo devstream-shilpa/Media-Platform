@@ -69,7 +69,7 @@ node --version      # Should be >= 18.0.0
 psql --version      # PostgreSQL client
 ```
 
-## 🚀 Quick Start Deployment
+##  Quick Start Deployment
 
 ### Automated Deployment 
 
@@ -100,7 +100,7 @@ cp terraform/terraform.tfvars.example terraform/terraform.tfvars
 
 
 
-## 📝 Configuration
+## Configuration
 
 ### terraform/terraform.tfvars
 
@@ -145,7 +145,7 @@ JWT_SECRET=your-secret-key
 JWT_EXPIRES_IN=24h
 ```
 
-## 🧪 Testing
+## Testing
 
 ### 1. Health Check
 
@@ -335,7 +335,7 @@ ssh -i ~/.ssh/media-platform-key.pem ec2-user@$PUBLIC_IP
 sudo docker logs -f media-api
 ```
 
-## 💰 Cost Estimation
+##  Cost Estimation
 
 **Monthly Operating Costs** (US East 1):
 
@@ -358,7 +358,7 @@ sudo docker logs -f media-api
 - Delete old CloudWatch logs
 - Consider Reserved Instances for production
 
-## 🔒 Security Best Practices
+##  Security Best Practices
 
 - [x] Private subnets for application and database
 - [x] Security groups with least privilege
@@ -371,7 +371,7 @@ sudo docker logs -f media-api
 - [ ] Enable VPC Flow Logs
 - [ ] Configure CloudTrail for audit logging
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Health Checks Failing
 
@@ -426,7 +426,7 @@ aws autoscaling describe-scaling-activities \
   --max-records 10
 ```
 
-## 🧹 Cleanup
+## Cleanup
 
 **WARNING**: This will destroy ALL resources and data!
 
@@ -451,14 +451,14 @@ aws ecr delete-repository \
   --force
 ```
 
-## 📚 Documentation
+## Documentation
 
 - [Design Document](./DESIGN.md) - Architecture and design decisions
 - [API Documentation](./docs/API.md) - API endpoints and examples
 - [Deployment Guide](./DEPLOYMENT.md) - Detailed deployment steps
 - [Troubleshooting Guide](./docs/TROUBLESHOOTING.md) - Common issues
 
-## 🎓 Project Requirements Met
+##  Project Requirements Met
 
 | Requirement | Implementation | Verification |
 |-------------|----------------|--------------|
@@ -467,7 +467,7 @@ aws ecr delete-repository \
 | **Failure Isolation** | Multi-AZ, redundant NAT, read replicas, S3 replication | Simulate AZ failure |
 | **Performance** | CloudFront CDN, Redis caching, read replicas, async processing | Load test shows <200ms p95 |
 
-## 📞 Support & Contact
+##  Support & Contact
 
 For issues or questions:
 1. Check [Troubleshooting Guide](./docs/TROUBLESHOOTING.md)
@@ -475,11 +475,11 @@ For issues or questions:
 3. Check AWS Health Dashboard for service issues
 4. Review Terraform state: `terraform show`
 
-## 📄 License
+##  License
 
 This project is for educational purposes as part of cloud architecture coursework.
 
 ---
 
 **Built with**: AWS, Terraform, Node.js, PostgreSQL, Redis, React  
-**Last Updated**: November 2025
+
