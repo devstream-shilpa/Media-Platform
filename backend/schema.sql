@@ -125,10 +125,3 @@ LEFT JOIN (
     GROUP BY media_id
 ) comment_count ON m.id = comment_count.media_id;
 
--- Sample data for testing (optional)
--- INSERT INTO users (email, username, password_hash) VALUES
--- ('test@example.com', 'testuser', '$2a$10$...');
-
--- Grant permissions (adjust as needed for your RDS setup)
--- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO your_db_user;
--- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO your_db_user;
