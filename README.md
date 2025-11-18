@@ -271,7 +271,7 @@ Configured alarms will email alerts when:
 - No healthy instances
 - Lambda errors > 10 in 5 minutes
 
-## 🔧 Operational Tasks
+## Operational Tasks
 
 ### Scale Manually
 
@@ -451,13 +451,6 @@ aws ecr delete-repository \
   --force
 ```
 
-## Documentation
-
-- [Design Document](./DESIGN.md) - Architecture and design decisions
-- [API Documentation](./docs/API.md) - API endpoints and examples
-- [Deployment Guide](./DEPLOYMENT.md) - Detailed deployment steps
-- [Troubleshooting Guide](./docs/TROUBLESHOOTING.md) - Common issues
-
 ##  Project Requirements Met
 
 | Requirement | Implementation | Verification |
@@ -470,7 +463,6 @@ aws ecr delete-repository \
 ##  Support & Contact
 
 For issues or questions:
-1. Check [Troubleshooting Guide](./docs/TROUBLESHOOTING.md)
 2. Review CloudWatch logs for errors
 3. Check AWS Health Dashboard for service issues
 4. Review Terraform state: `terraform show`
