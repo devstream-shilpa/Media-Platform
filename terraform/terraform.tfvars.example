@@ -1,0 +1,21 @@
+cat > terraform/terraform.tfvars.example << 'EOF'
+# Copy this to terraform.tfvars and fill in your values
+# NEVER commit terraform.tfvars!
+
+aws_region = "us-east-1"
+environment = "production"
+project_name = "media-platform"
+availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+
+vpc_cidr = "10.0.0.0/16"
+
+# EC2 key pair name (create with: aws ec2 create-key-pair)
+key_name = "media-platform-key"
+
+# Database credentials (use strong passwords!)
+db_username = "mediaadmin"
+db_password = "CHANGE_ME_SecurePassword123!"
+
+# Email for CloudWatch alerts
+alert_email = "your-email@example.com"
+EOF
