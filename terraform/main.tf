@@ -2,7 +2,7 @@
 
 terraform {
   required_version = ">= 1.5.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -20,11 +20,14 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
-  
+
   default_tags {
     tags = {
       Project     = "MediaPlatform"
+      Owner       = "Shilpa" # Add your name here
       Environment = var.environment
+      CostCenter  = "ENG"
+      DataClass   = "Internal"
       ManagedBy   = "Terraform"
     }
   }
@@ -242,13 +245,12 @@ resource "aws_security_group" "app" {
     security_groups = [aws_security_group.alb.id]
   }
 
-  ingress {
-    description = "SSH from anywhere (restrict in production)"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # TODO: Restrict to your IP
-  }
+  #ingress {
+  # description = "SSH from anywhere (restrict in production)"
+  #to_port     = 22
+  #protocol    = "tcp"
+  #cidr_blocks = ["0.0.0.0/0"] # TODO: Restrict to your IP
+  #}
 
   egress {
     description = "Allow all outbound"
@@ -324,7 +326,7 @@ resource "aws_lb" "main" {
   subnets            = aws_subnet.public[*].id
 
   enable_deletion_protection = false
-  enable_http2              = true
+  enable_http2               = true
 
   tags = {
     Name = "${var.project_name}-alb"
@@ -414,10 +416,10 @@ data "aws_ami" "amazon_linux_2023" {
 
 # Auto Scaling Group
 resource "aws_autoscaling_group" "app" {
-  name                = "${var.project_name}-asg"
-  vpc_zone_identifier = aws_subnet.private[*].id
-  target_group_arns   = [aws_lb_target_group.app.arn]
-  health_check_type   = "ELB"
+  name                      = "${var.project_name}-asg"
+  vpc_zone_identifier       = aws_subnet.private[*].id
+  target_group_arns         = [aws_lb_target_group.app.arn]
+  health_check_type         = "ELB"
   health_check_grace_period = 300
 
   min_size         = 2
@@ -660,29 +662,57 @@ resource "aws_iam_role_policy" "app" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "ReadWriteMediaBuckets"
         Effect = "Allow"
         Action = [
           "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject"
+          "s3:PutObject"
         ]
         Resource = "${aws_s3_bucket.media.arn}/*"
       },
       {
+        Sid    = "ListBucketForPresignedURLs"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket"
+        ]
+        Resource = aws_s3_bucket.media.arn
+      },
+      {
+        Sid    = "PublishToProcessingQueue"
         Effect = "Allow"
         Action = [
           "sqs:SendMessage",
-          "sqs:ReceiveMessage",
-          "sqs:DeleteMessage"
+          "sqs:GetQueueAttributes",
+          "sqs:GetQueueUrl"
         ]
         Resource = aws_sqs_queue.media_processing.arn
       },
       {
+        Sid    = "ReadDatabaseSecretAtRuntime"
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:media/db-credentials-${var.environment}-*"
+      },
+      {
+        Sid    = "PutCloudWatchMetrics"
         Effect = "Allow"
         Action = [
           "cloudwatch:PutMetricData"
         ]
         Resource = "*"
+      },
+      {
+        Sid    = "WriteApplicationLogs"
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/ec2/${var.project_name}:*"
       }
     ]
   })
@@ -742,4 +772,8 @@ output "s3_media_bucket" {
 output "sqs_queue_url" {
   description = "SQS queue URL for media processing"
   value       = aws_sqs_queue.media_processing.url
+}
+variable "alert_email" {
+  description = "Email address for CloudWatch alerts"
+  type        = string
 }

@@ -19,7 +19,6 @@ resource "aws_iam_role" "lambda_media_processing" {
     ]
   })
 }
-
 resource "aws_iam_role_policy" "lambda_media_processing" {
   name = "${var.project_name}-lambda-media-processing-policy"
   role = aws_iam_role.lambda_media_processing.id
@@ -28,46 +27,52 @@ resource "aws_iam_role_policy" "lambda_media_processing" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "WriteLambdaLogs"
         Effect = "Allow"
         Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
-        Resource = "arn:aws:logs:*:*:*"
+        Resource = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.project_name}-media-processing:*"
       },
       {
+        Sid    = "ReadAndWriteMediaFiles"
         Effect = "Allow"
         Action = [
           "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject"
+          "s3:PutObject"
         ]
         Resource = "${aws_s3_bucket.media.arn}/*"
       },
       {
+        Sid    = "ProcessMessagesFromQueue"
         Effect = "Allow"
         Action = [
           "sqs:ReceiveMessage",
           "sqs:DeleteMessage",
-          "sqs:GetQueueAttributes"
+          "sqs:GetQueueAttributes",
+          "sqs:ChangeMessageVisibility"
         ]
         Resource = aws_sqs_queue.media_processing.arn
       },
       {
+        Sid    = "ReadDatabaseSecretAtRuntime"
         Effect = "Allow"
         Action = [
-          "rds:DescribeDBInstances",
-          "rds:DescribeDBClusters"
+          "secretsmanager:GetSecretValue"
         ]
-        Resource = "*"
+        Resource = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:media/db-credentials-${var.environment}-*"
       },
       {
+        Sid    = "ManageENIForVPC"
         Effect = "Allow"
         Action = [
           "ec2:CreateNetworkInterface",
           "ec2:DescribeNetworkInterfaces",
-          "ec2:DeleteNetworkInterface"
+          "ec2:DeleteNetworkInterface",
+          "ec2:AssignPrivateIpAddresses",
+          "ec2:UnassignPrivateIpAddresses"
         ]
         Resource = "*"
       }
@@ -132,11 +137,8 @@ resource "aws_lambda_function" "media_processing" {
   environment {
     variables = {
       S3_MEDIA_BUCKET = aws_s3_bucket.media.id
-      DB_HOST         = aws_db_instance.main.address
-      DB_PORT         = "5432"
-      DB_NAME         = "mediaplatform"
-      DB_USER         = var.db_username
-      DB_PASSWORD     = var.db_password
+      ENVIRONMENT     = var.environment
+      AWS_REGION      = var.aws_region
       REDIS_HOST      = aws_elasticache_cluster.main.cache_nodes[0].address
       REDIS_PORT      = "6379"
     }
