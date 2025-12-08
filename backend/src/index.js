@@ -20,17 +20,10 @@ AWS.config.update({ region: process.env.AWS_REGION || 'us-east-1' });
 const s3 = new AWS.S3();
 const sqs = new AWS.SQS();
 
-// Database connection pool
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  max: 50,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000,
-});
+
+// Database configuration (will be initialized on startup)
+const { initializeDatabasePool, getDatabasePool } = require('./config/database');
+let pool; // Will be initialized after fetching credentials
 
 // Redis client for caching
 const redis = new Redis({
@@ -428,10 +421,41 @@ app.use((err, req, res, next) => {
 
 // ==================== Server Start ====================
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+// Initialize database and start server
+async function startServer() {
+  try {
+    // Initialize database pool with credentials from Secrets Manager
+    pool = await initializeDatabasePool();
+    
+    // Start Express server
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📍 Environment: ${process.env.ENVIRONMENT || 'dev'}`);
+    });
+    
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received, closing server gracefully...');
+  const { closeDatabasePool } = require('./config/database');
+  await closeDatabasePool();
+  process.exit(0);
 });
+
+process.on('SIGINT', async () => {
+  console.log('SIGINT received, closing server gracefully...');
+  const { closeDatabasePool } = require('./config/database');
+  await closeDatabasePool();
+  process.exit(0);
+});
+
+// Start the application
+startServer();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
