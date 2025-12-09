@@ -61,7 +61,7 @@ variable "vpc_cidr" {
 variable "availability_zones" {
   description = "List of availability zones"
   type        = list(string)
-  default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  default     = ["us-west-1a", "us-west-1c"]
 }
 
 variable "db_username" {
@@ -510,7 +510,7 @@ resource "aws_db_subnet_group" "main" {
 resource "aws_db_instance" "main" {
   identifier     = "${var.project_name}-db"
   engine         = "postgres"
-  engine_version = "15.4"
+  engine_version = "15.10"
   instance_class = "db.t3.medium"
 
   allocated_storage     = 100
@@ -544,18 +544,18 @@ resource "aws_db_instance" "main" {
 }
 
 # Read Replica
-resource "aws_db_instance" "replica" {
-  identifier          = "${var.project_name}-db-replica"
-  replicate_source_db = aws_db_instance.main.identifier
-  instance_class      = "db.t3.medium"
+#resource "aws_db_instance" "replica" {
+ # identifier          = "${var.project_name}-db-replica"
+  #replicate_source_db = aws_db_instance.main.identifier
+  #instance_class      = "db.t3.medium"
 
-  publicly_accessible = false
-  skip_final_snapshot = true
+  #publicly_accessible = false
+  #skip_final_snapshot = true
 
-  tags = {
-    Name = "${var.project_name}-db-replica"
-  }
-}
+  #tags = {
+   # Name = "${var.project_name}-db-replica"
+  #}
+#}
 
 # ElastiCache Redis
 resource "aws_elasticache_subnet_group" "main" {
