@@ -23,6 +23,36 @@ This project demonstrates enterprise-grade cloud architecture by deploying a sca
 - **Caching**: Redis-based caching for 80%+ cache hit rate
 - **Monitoring**: Comprehensive CloudWatch metrics and alarms
 
+## Security Enhancements
+
+This platform implements enterprise-grade security hardening:
+
+### Phase 1: Principle of Least Privilege
+- **IAM Policy Slimming**: All roles restricted to minimum required permissions
+  - Removed unnecessary S3 DeleteObject permissions
+  - Specific resource ARNs (no wildcards except where AWS-required)
+  - Added Secrets Manager access for credential retrieval
+- **Network Segmentation**: 
+  - All sensitive resources in private subnets
+  - VPC endpoints for S3, SQS, and Secrets Manager
+  - Security groups enforce least-privilege access
+  - RDS publicly_accessible = false
+
+### Phase 2: Credential Elimination
+- **AWS Secrets Manager Integration**:
+  - Database credentials stored in Secrets Manager
+  - Runtime credential retrieval using IAM roles
+  - No hardcoded secrets in code or environment files
+  - Automated credential rotation supported
+
+### Phase 3: Infrastructure Governance
+- **Resource Tagging**: Mandatory tags on all resources (Project, Owner, Environment, CostCenter, DataClass, ManagedBy)
+- **CI/CD Pipeline**: GitHub Actions workflow with:
+  - Automated Terraform validation and security scanning (tfsec)
+  - Pull request plan previews
+  - Approval gates for staging/production deployments
+- **Change Control**: Documented deployment strategy with approval requirements
+
 ## Architecture
 
 ### Infrastructure Components
